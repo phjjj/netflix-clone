@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
-import { getMovies, IGetMoviesResult } from "../api";
+import { getMovies, getMoviesGenres, IGenres, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
 import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -158,17 +158,19 @@ function Home() {
   const history = useHistory();
   const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
   const { scrollY } = useScroll();
-  const { data, isLoading } = useQuery<IGetMoviesResult>(
+  const { data: nowPlayingMovies, isLoading } = useQuery<IGetMoviesResult>(
     ["movies", "nowPlaying"],
     getMovies
   );
+  const { data: moviesGenres } = useQuery<IGenres>(["genres"], getMoviesGenres);
+  console.log(moviesGenres);
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const incraseIndex = () => {
-    if (data) {
+    if (nowPlayingMovies) {
       if (leaving) return;
       toggleLeaving();
-      const totalMovies = data.results.length - 1;
+      const totalMovies = nowPlayingMovies.results.length - 1;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
@@ -180,8 +182,10 @@ function Home() {
   const onOverlayClick = () => history.push("/");
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
-    data?.results.find((movie) => movie.id === +bigMovieMatch.params.movieId);
-  console.log(clickedMovie);
+    nowPlayingMovies?.results.find(
+      (movie) => movie.id === +bigMovieMatch.params.movieId
+    );
+
   return (
     <Wrapper>
       {isLoading ? (
@@ -190,10 +194,12 @@ function Home() {
         <>
           <Banner
             onClick={incraseIndex}
-            bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}
+            bgPhoto={makeImagePath(
+              nowPlayingMovies?.results[0].backdrop_path || ""
+            )}
           >
-            <Title>{data?.results[0].title}</Title>
-            <Overview>{data?.results[0].overview}</Overview>
+            <Title>{nowPlayingMovies?.results[0].title}</Title>
+            <Overview>{nowPlayingMovies?.results[0].overview}</Overview>
           </Banner>
           <Slider>
             <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
@@ -205,7 +211,7 @@ function Home() {
                 transition={{ type: "tween", duration: 1 }}
                 key={index}
               >
-                {data?.results
+                {nowPlayingMovies?.results
                   .slice(1)
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
@@ -252,6 +258,9 @@ function Home() {
                         }}
                       />
                       <BigTitle>{clickedMovie.title}</BigTitle>
+                      <span>개봉일:</span>
+                      <span>장르:</span>
+                      <p>{clickedMovie.overview}</p>
                     </>
                   )}
                 </BigMovie>

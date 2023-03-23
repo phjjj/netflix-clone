@@ -21,10 +21,23 @@ export interface IGetMoviesResult {
   total_results: number;
 }
 
-export function getMovies() {
-  return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then(
-    (response) => response.json()
-  );
+export interface IGenres {
+  genres: [
+    {
+      id: number;
+      name: string;
+    }
+  ];
 }
 
+export function getMovies() {
+  return fetch(
+    `${BASE_PATH}/movie/now_playing?api_key=${API_KEY}&language=ko-KO&region=KR`
+  ).then((response) => response.json());
+}
 
+export function getMoviesGenres() {
+  return fetch(
+    `${BASE_PATH}/genre/movie/list?api_key=${API_KEY}&language=ko-KO`
+  ).then((response) => response.json());
+}
