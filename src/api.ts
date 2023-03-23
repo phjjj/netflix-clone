@@ -26,3 +26,5 @@ export function getMovies() {
     (response) => response.json()
   );
 }
+
+

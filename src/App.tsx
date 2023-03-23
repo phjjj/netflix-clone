@@ -1,12 +1,15 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, useRouteMatch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useRouteMatch,
+} from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./Routes/Home";
 import Search from "./Routes/Search";
 import Tv from "./Routes/TV";
 function App() {
-  
-
   return (
     <Router>
       <Header />
@@ -17,7 +20,7 @@ function App() {
         <Route path="/search">
           <Search />
         </Route>
-        <Route path="/">
+        <Route path={["/", "/movies/:movieId"]}>
           <Home />
         </Route>
       </Switch>
