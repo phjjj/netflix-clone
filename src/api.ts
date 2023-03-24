@@ -7,6 +7,7 @@ interface IMovie {
   poster_path: string;
   title: string;
   overview: string;
+  release_date: string;
 }
 
 export interface IGetMoviesResult {
@@ -21,23 +22,18 @@ export interface IGetMoviesResult {
   total_results: number;
 }
 
-export interface IGenres {
-  genres: [
-    {
-      id: number;
-      name: string;
-    }
-  ];
+export interface IGetPopularMovies {
+  result: IMovie[];
 }
 
-export function getMovies() {
+export function getNowPlayingMovies() {
   return fetch(
-    `${BASE_PATH}/movie/now_playing?api_key=${API_KEY}&language=ko-KO&region=KR`
+    `${BASE_PATH}/movie/now_playing?api_key=${API_KEY}&language=ko-KO`
   ).then((response) => response.json());
 }
 
-export function getMoviesGenres() {
+export function getPopularMovies() {
   return fetch(
-    `${BASE_PATH}/genre/movie/list?api_key=${API_KEY}&language=ko-KO`
+    `${BASE_PATH}/movie/popular?api_key=${API_KEY}&language=ko-KO`
   ).then((response) => response.json());
 }
