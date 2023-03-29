@@ -37,3 +37,8 @@ export function getPopularMovies() {
     `${BASE_PATH}/movie/popular?api_key=${API_KEY}&language=ko-KO`
   ).then((response) => response.json());
 }
+export function getTopRatedMovies() {
+  return fetch(
+    `${BASE_PATH}/movie/top_rated?api_key=${API_KEY}&language=ko-KO`
+  ).then((response) => response.json());
+}
