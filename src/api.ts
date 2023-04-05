@@ -3,6 +3,17 @@ const BASE_PATH = "https://api.themoviedb.org/3";
 
 interface IMovie {
   id: number;
+  name: string;
+  backdrop_path: string;
+  poster_path: string;
+  title: string;
+  overview: string;
+  release_date: string;
+}
+
+interface ITv {
+  id: number;
+  name: string;
   backdrop_path: string;
   poster_path: string;
   title: string;
@@ -22,9 +33,14 @@ export interface IGetMoviesResult {
   total_results: number;
 }
 
-export interface IGetPopularMovies {
-  result: IMovie[];
+export interface IGetTvResult {
+  page: number;
+  results: ITv[];
+  total_pages: number;
+  total_results: number;
 }
+
+
 
 export function getNowPlayingMovies() {
   return fetch(
@@ -42,3 +58,22 @@ export function getTopRatedMovies() {
     `${BASE_PATH}/movie/top_rated?api_key=${API_KEY}&language=ko-KO`
   ).then((response) => response.json());
 }
+
+export function getTvOnTheAir() {
+  return fetch(
+    `${BASE_PATH}/tv/on_the_air?api_key=${API_KEY}&language=en-US`
+  ).then((response) => response.json());
+}
+
+export function getPopularTv() {
+  return fetch(
+    `${BASE_PATH}/tv/popular?api_key=${API_KEY}&language=en-US`
+  ).then((response) => response.json());
+}
+
+export function getTopRatedTv() {
+  return fetch(
+    `${BASE_PATH}/tv/top_rated?api_key=${API_KEY}&language=en-US`
+  ).then((response) => response.json());
+}
+

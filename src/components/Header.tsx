@@ -1,15 +1,8 @@
-import { Link, Route, useHistory, useRouteMatch } from "react-router-dom";
+import { Link, useRouteMatch, useHistory } from "react-router-dom";
 import styled from "styled-components";
-import {
-  motion,
-  useAnimation,
-  useMotionValueEvent,
-  useScroll,
-  useViewportScroll,
-} from "framer-motion";
+import { motion, useAnimation, useViewportScroll } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import Search from "../Routes/Search";
 
 const Nav = styled(motion.nav)`
   display: flex;
@@ -57,6 +50,15 @@ const Item = styled.li`
   }
 `;
 
+const Search = styled.form`
+  color: white;
+  display: flex;
+  align-items: center;
+  position: relative;
+  svg {
+    height: 25px;
+  }
+`;
 
 const Circle = styled(motion.span)`
   position: absolute;
@@ -70,7 +72,18 @@ const Circle = styled(motion.span)`
   background-color: ${(props) => props.theme.red};
 `;
 
-
+const Input = styled(motion.input)`
+  transform-origin: right center;
+  position: absolute;
+  right: 0px;
+  padding: 5px 10px;
+  padding-left: 40px;
+  z-index: -1;
+  color: white;
+  font-size: 16px;
+  background-color: transparent;
+  border: 1px solid ${(props) => props.theme.white.lighter};
+`;
 
 const logoVariants = {
   normal: {
@@ -103,7 +116,7 @@ function Header() {
   const tvMatch = useRouteMatch("/tv");
   const inputAnimation = useAnimation();
   const navAnimation = useAnimation();
-  const { scrollY } = useScroll();
+  const { scrollY } = useViewportScroll();
   const toggleSearch = () => {
     if (searchOpen) {
       inputAnimation.start({
@@ -114,17 +127,20 @@ function Header() {
     }
     setSearchOpen((prev) => !prev);
   };
+  useEffect(() => {
+    scrollY.onChange(() => {
+      if (scrollY.get() > 80) {
+        navAnimation.start("scroll");
+      } else {
+        navAnimation.start("top");
+      }
+    });
+  }, [scrollY, navAnimation]);
   const history = useHistory();
   const { register, handleSubmit } = useForm<IForm>();
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    if (latest > 80) {
-      navAnimation.start("scroll");
-    } else {
-      navAnimation.start("top");
-    }
-  });
-
-
+  const onValid = (data: IForm) => {
+    history.push(`/search?keyword=${data.keyword}`);
+  };
   return (
     <Nav variants={navVariants} animate={navAnimation} initial={"top"}>
       <Col>
@@ -153,9 +169,29 @@ function Header() {
         </Items>
       </Col>
       <Col>
-        <Route path="/search">
-          <Search />
-        </Route>
+        <Search onSubmit={handleSubmit(onValid)}>
+          <motion.svg
+            onClick={toggleSearch}
+            animate={{ x: searchOpen ? -185 : 0 }}
+            transition={{ type: "linear" }}
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fillRule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clipRule="evenodd"
+            ></path>
+          </motion.svg>
+          <Input
+            {...register("keyword", { required: true, minLength: 2 })}
+            animate={inputAnimation}
+            initial={{ scaleX: 0 }}
+            transition={{ type: "linear" }}
+            placeholder="Search for movie or tv show..."
+          />
+        </Search>
       </Col>
     </Nav>
   );

@@ -245,9 +245,9 @@ function Home() {
   const onBoxClicked = (movieId: number, type: string) => {
     history.push(`/movies/${movieId}/${type}`);
     setType(type);
-    
   };
   const onOverlayClick = () => history.push("/");
+
 
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
